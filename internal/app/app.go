@@ -1,57 +1,54 @@
 package app
 
 import (
-	"encoding/json"
 	"log"
-	"mail-phone-auth/pkg/http"
-	"os"
+	"mail-phone-auth/internal/api"
+	"mail-phone-auth/internal/app/files"
+	"mail-phone-auth/pkg/http_server"
+	"mail-phone-auth/pkg/postgres"
 )
 
 type App struct {
-	HttpServer  *http.Server
+	API *api.API
+	HttpServer *http_server.HttpServer
+	Postgres *postgres.Postgres
 }
 
-func New() *App {
+func NewApp() *App {
 
 	const httpServerConfigFilePath = "./config/http_server.json"
-	
-	httpConfig, err:= initConfig[http.Config](httpServerConfigFilePath)
+	const postgresCongigFilePath = "./config/postgres.json"
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	app := App{}
 
-	return &App{
-		HttpServer: http.New(httpConfig),
-	}	
+	// Create Handler:
+	app.API = api.New()
+
+	// Create HttpServer:
+	httpConfig, err:= files.InitConfig[http_server.Config](httpServerConfigFilePath)
+	if err != nil {log.Fatal(err)}
+
+	app.HttpServer =  http_server.New(httpConfig, app.API.Router)
+
+	//Create Poatgres:
+	postgresConfig, err := files.InitConfig[postgres.Config](postgresCongigFilePath)
+	if err != nil {log.Fatal(err)}
+
+	app.Postgres, err = postgres.NewPostgres(postgresConfig)
+	if err != nil {log.Fatal(err)}
+
+	return &app
 }
+
+
 
 func (app *App) Run() {
 	go func() {
-		app.HttpServer.Run()
+		err := app.HttpServer.Run()
+		if err != nil {log.Fatal(err)}
 	}()
 }
 
 func (app *App) Stop() {
 	app.HttpServer.Stop()
 }
-
-func initConfig[T any](configFilePath string) (*T, error) {
-	
-	var config T
-
-	fileData, err := os.ReadFile(configFilePath)
-
-	if err != nil {
-		return  nil, err
-	}
-
-	err = json.Unmarshal(fileData, &config)
-
-	if err != nil {
-		return  nil, err
-	}
-
-	return &config, nil
-}
-

@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	application := app.New()
+	application := app.NewApp()
 	application.Run()
 
 	stopSignalHandler(application.Stop)

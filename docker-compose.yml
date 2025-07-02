@@ -1,0 +1,10 @@
+services:
+  postgres:
+    container_name: pg_mpa
+    image: postgres:17.5
+    env_file:
+      - ./postgres.env
+    volumes: 
+      - ./pg-data:/data/postgres
+    ports: 
+      - "5100:5432"

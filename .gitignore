@@ -1,3 +1,5 @@
-/configs
+/config
 /bin
+/pg-data
+postgres.env
 

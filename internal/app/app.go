@@ -21,8 +21,15 @@ func NewApp() *App {
 
 	app := App{}
 
-	// Create Handler:
-	app.API = api.New()
+	// Create Poatgres:
+	postgresConfig, err := files.InitConfig[postgres.Config](postgresCongigFilePath)
+	if err != nil {log.Fatal(err)}
+
+	app.Postgres, err = postgres.NewPostgres(postgresConfig)
+	if err != nil {log.Fatal(err)}
+
+	// Create API:
+	app.API = api.New(app.Postgres)
 
 	// Create HttpServer:
 	httpConfig, err:= files.InitConfig[http_server.Config](httpServerConfigFilePath)
@@ -30,22 +37,13 @@ func NewApp() *App {
 
 	app.HttpServer =  http_server.New(httpConfig, app.API.Router)
 
-	//Create Poatgres:
-	postgresConfig, err := files.InitConfig[postgres.Config](postgresCongigFilePath)
-	if err != nil {log.Fatal(err)}
-
-	app.Postgres, err = postgres.NewPostgres(postgresConfig)
-	if err != nil {log.Fatal(err)}
-
 	return &app
 }
-
-
 
 func (app *App) Run() {
 	go func() {
 		err := app.HttpServer.Run()
-		if err != nil {log.Fatal(err)}
+		if err != nil {log.Println(err)}
 	}()
 }
 

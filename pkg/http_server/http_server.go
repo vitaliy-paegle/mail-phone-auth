@@ -52,6 +52,6 @@ func (httpServer *HttpServer) Run() error {
 
 }
 
-func (httpServer *HttpServer) Stop() {
+func (httpServer *HttpServer) Stop()  {
 	httpServer.Server.Shutdown(context.Background())
 }

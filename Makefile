@@ -1,5 +1,10 @@
+ 
+GOPATH=$(shell go env GOPATH)
+GOROOT=$(shell go env GOROOT)
+
+
 hello: 
-	echo 'HelloWorld!'
+	echo 'HelloWorld! GOPATH: $(GOPATH)  GOROOT: $(GOROOT)'
 
 go_clear:
 	go mod tidy
@@ -30,3 +35,9 @@ docker_info:
 
 docker_stop:
 	docker compose down
+
+swagger_version:
+	$(GOPATH)/bin/swag -v
+
+swagger_docs:
+	$(GOPATH)/bin/swag init -d internal/entities/user -g handler.go --pd --parseInternal

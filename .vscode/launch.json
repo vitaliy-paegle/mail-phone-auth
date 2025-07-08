@@ -11,6 +11,5 @@
 			"mode": "auto",
 			"program": "${workspaceFolder}/cmd"
 		}
-
 	]
 }

@@ -13,6 +13,7 @@ type IAPI interface{
 	TestAPI()
 }
 
+
 type Handler struct{
 	Router *http.ServeMux
 	Repository *Repository
@@ -61,11 +62,12 @@ func (handler *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// GetLiveness checks the liveness of the instance.
-// @summary  Check the liveness of the instance
-// @router   /livez [get]
-// @tags     health
+// Get User
+// @summary  Get User by ID
+// @router   /api/user/{id} [get]
+// @tags     user
 // @success  200
+// @failure  400
 
 func (handler *Handler) Read(w http.ResponseWriter, r *http.Request) {
 	idString := r.PathValue("id")

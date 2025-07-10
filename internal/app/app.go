@@ -5,6 +5,7 @@ import (
 	"mail-phone-auth/internal/api"
 	"mail-phone-auth/internal/app/files"
 	"mail-phone-auth/pkg/http_server"
+	"mail-phone-auth/pkg/jwt"
 	"mail-phone-auth/pkg/postgres"
 )
 
@@ -12,14 +13,22 @@ type App struct {
 	API *api.API
 	HttpServer *http_server.HttpServer
 	Postgres *postgres.Postgres
+	JWT *jwt.JWT
 }
 
 func NewApp() *App {
 
 	const httpServerConfigFilePath = "./config/http_server.json"
 	const postgresCongigFilePath = "./config/postgres.json"
+	const jwtCongigFilePath = "./config/postgres.json"
 
 	app := App{}
+
+	// Create JWT:
+	jwtConfig, err := files.InitConfig[jwt.Config](jwtCongigFilePath) 
+	if err != nil {log.Fatal(err)}
+
+	app.JWT = jwt.New(jwtConfig)
 
 	// Create Poatgres:
 	postgresConfig, err := files.InitConfig[postgres.Config](postgresCongigFilePath)
@@ -29,7 +38,7 @@ func NewApp() *App {
 	if err != nil {log.Fatal(err)}
 
 	// Create API:
-	app.API = api.New(app.Postgres)
+	app.API = api.New(app.Postgres , app.JWT)
 
 	// Create HttpServer:
 	httpConfig, err:= files.InitConfig[http_server.Config](httpServerConfigFilePath)

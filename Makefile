@@ -2,7 +2,6 @@
 GOPATH=$(shell go env GOPATH)
 GOROOT=$(shell go env GOROOT)
 
-
 hello: 
 	echo 'HelloWorld! GOPATH: $(GOPATH)  GOROOT: $(GOROOT)'
 
@@ -40,4 +39,4 @@ swagger_version:
 	$(GOPATH)/bin/swag -v
 
 swagger_docs:
-	$(GOPATH)/bin/swag init -d internal/entities/user -g handler.go --pd --parseInternal
+	$(GOPATH)/bin/swag init -d ./internal/api/,./internal/entities/ -g api.go --pd --parseInternal

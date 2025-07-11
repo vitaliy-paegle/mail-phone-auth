@@ -8,10 +8,10 @@ import (
 )
 
 type Config struct {
-	Port string `json:"port"`
+	Port string `json:"port"  validate:"required"`
 }
 
-// http_server.json:
+// http_server.json
 // {
 // 	"port": "1000"
 // }

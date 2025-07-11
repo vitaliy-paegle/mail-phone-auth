@@ -28,6 +28,10 @@ func(r *Repository) Read(ID int) (*User, error) {
 	}
 }
 
+func (r *Repository) ReadByEmail(email string) (*User, error) {
+	return  nil, nil
+}
+
 func (r *Repository) ReadAll (limit int, offset int) []User {
 	var users []User
 
@@ -72,3 +76,4 @@ func (r *Repository) Delete(ID int) (error) {
 		return nil
 	}
 }
+

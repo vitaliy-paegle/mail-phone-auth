@@ -1,15 +1,22 @@
 package jwt
 
 import (
-	"log"
+
 )
 
 
 type Config struct {
-	Secret string `json:"secret"`
-	AccsessPeriod int `json:"access_period"`
-	RefreshPeriod int `json:"refresh_period"`
+	Secret string `json:"secret" validate:"required"`
+	AccsessPeriod int `json:"access_period" validate:"required"`
+	RefreshPeriod int `json:"refresh_period" validate:"required"`
 }
+
+// jwt.json
+// {
+// 	"secret": "0de81fe3867deeejghn6369124ca1077",
+// 	"access_period": 60,
+// 	"refresh_period": 120
+// }
 
 type UserData struct {
 	ID int `json:"id"`
@@ -35,7 +42,6 @@ type JWT struct {
 
 func New (config *Config) *JWT {
 
-	log.Println(config)
 	jwt := JWT{config: config}
 
 	return  &jwt

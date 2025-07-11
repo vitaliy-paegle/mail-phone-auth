@@ -5,57 +5,67 @@ import (
 	"mail-phone-auth/internal/api"
 	"mail-phone-auth/internal/app/files"
 	"mail-phone-auth/pkg/http_server"
+	"mail-phone-auth/pkg/jino_mail"
 	"mail-phone-auth/pkg/jwt"
 	"mail-phone-auth/pkg/postgres"
 )
 
 type App struct {
-	API *api.API
-	HttpServer *http_server.HttpServer
-	Postgres *postgres.Postgres
-	JWT *jwt.JWT
+	api *api.API
+	httpServer *http_server.HttpServer
+	postgres *postgres.Postgres
+	jwt *jwt.JWT
+	jinoMail *jino_mail.JinoMail
+
 }
 
 func NewApp() *App {
 
 	const httpServerConfigFilePath = "./config/http_server.json"
 	const postgresCongigFilePath = "./config/postgres.json"
-	const jwtCongigFilePath = "./config/postgres.json"
+	const jwtCongigFilePath = "./config/jwt.json"
+	const jinoMailFilePath = "./config/jino_mail.json"
 
 	app := App{}
 
 	// Create JWT:
 	jwtConfig, err := files.InitConfig[jwt.Config](jwtCongigFilePath) 
-	if err != nil {log.Fatal(err)}
+	if err != nil {log.Fatal("JWT CONFIG ERROR: ", err)}
 
-	app.JWT = jwt.New(jwtConfig)
+	app.jwt = jwt.New(jwtConfig)
+
+	// Create JinoEmail:
+	jinoMailConfig, err := files.InitConfig[jino_mail.Config](jinoMailFilePath)
+	if err != nil {log.Fatal("JINO MAIL CONFIG ERROR: ", err)}
+
+	app.jinoMail = jino_mail.New(jinoMailConfig)
 
 	// Create Poatgres:
 	postgresConfig, err := files.InitConfig[postgres.Config](postgresCongigFilePath)
-	if err != nil {log.Fatal(err)}
+	if err != nil {log.Fatal("POSTGRES CONFIG ERROR: ", err)}
 
-	app.Postgres, err = postgres.NewPostgres(postgresConfig)
-	if err != nil {log.Fatal(err)}
+	app.postgres, err = postgres.NewPostgres(postgresConfig)
+	if err != nil {log.Fatal("POSTGRES INIT ERROR: ", err)}
 
 	// Create API:
-	app.API = api.New(app.Postgres , app.JWT)
+	app.api = api.New(app.postgres , app.jwt)
 
 	// Create HttpServer:
 	httpConfig, err:= files.InitConfig[http_server.Config](httpServerConfigFilePath)
-	if err != nil {log.Fatal(err)}
+	if err != nil {log.Fatal("HTTP SERVER CONFIG ERROR: ", err)}
 
-	app.HttpServer =  http_server.New(httpConfig, app.API.Router)
+	app.httpServer =  http_server.New(httpConfig, app.api.Router)
 
 	return &app
 }
 
 func (app *App) Run() {
 	go func() {
-		err := app.HttpServer.Run()
+		err := app.httpServer.Run()
 		if err != nil {log.Println(err)}
 	}()
 }
 
 func (app *App) Stop() {
-	app.HttpServer.Stop()
+	app.httpServer.Stop()
 }

@@ -11,7 +11,6 @@ type UserUpdateRequest struct {
 	Phone string `json:"phone" validate:"e164"`
 }
 
-
 type UserAllResponse struct {
 	Users []User `json:"users"`
 	Count int `json:"count"`

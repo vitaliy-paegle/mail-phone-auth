@@ -7,15 +7,15 @@ import (
 )
 
 type Config struct {
-	Host string `json:"host"`
-	User string `json:"user"`
-	Password string `json:"password"`
-	DBname string `json:"dbname"`
-	Port string `json:"port"`
-	SSLmode string `json:"sslmode"`
+	Host string `json:"host" validate:"required"`
+	User string `json:"user" validate:"required"`
+	Password string `json:"password" validate:"required"`
+	DBname string `json:"dbname" validate:"required"`
+	Port string `json:"port" validate:"required"`
+	SSLmode string `json:"sslmode" validate:"required"`
 }
 
-// postgres.json:
+// postgres.json
 // {
 // 	"host": "localhost",
 // 	"user": "main",

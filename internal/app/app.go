@@ -8,6 +8,7 @@ import (
 	"mail-phone-auth/pkg/jino_mail"
 	"mail-phone-auth/pkg/jwt"
 	"mail-phone-auth/pkg/postgres"
+	"mail-phone-auth/pkg/exolve"
 )
 
 type App struct {
@@ -16,6 +17,7 @@ type App struct {
 	postgres *postgres.Postgres
 	jwt *jwt.JWT
 	jinoMail *jino_mail.JinoMail
+	exolve *exolve.Exolve
 
 }
 
@@ -25,6 +27,7 @@ func NewApp() *App {
 	const postgresCongigFilePath = "./config/postgres.json"
 	const jwtCongigFilePath = "./config/jwt.json"
 	const jinoMailFilePath = "./config/jino_mail.json"
+	const exolveFilePath = "./config/exolve.json"
 
 	app := App{}
 
@@ -38,7 +41,7 @@ func NewApp() *App {
 	jinoMailConfig, err := files.InitConfig[jino_mail.Config](jinoMailFilePath)
 	if err != nil {log.Fatal("JINO MAIL CONFIG ERROR: ", err)}
 
-	app.jinoMail = jino_mail.New(jinoMailConfig)
+	app.jinoMail = jino_mail.New(jinoMailConfig, false)
 
 	// Create Poatgres:
 	postgresConfig, err := files.InitConfig[postgres.Config](postgresCongigFilePath)
@@ -55,6 +58,12 @@ func NewApp() *App {
 	if err != nil {log.Fatal("HTTP SERVER CONFIG ERROR: ", err)}
 
 	app.httpServer =  http_server.New(httpConfig, app.api.Router)
+
+	// Create Exolve:
+	exolveConfig, err := files.InitConfig[exolve.Config](exolveFilePath)
+	if err != nil {log.Fatal("EXOLVE CONFIG ERROR: ", err)}
+
+	app.exolve = exolve.New(exolveConfig, false)
 
 	return &app
 }

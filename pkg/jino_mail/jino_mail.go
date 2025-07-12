@@ -19,7 +19,7 @@ type Config struct {
 // jino_mail.json
 // {
 // 	"host": "smtp.jino.ru",
-// 	"port": "465",
+// 	"port": 465,
 // 	"user": "name@mail.ru",
 // 	"password": "abc123
 //  "admin_address": "admin@mail.ru"
@@ -29,11 +29,11 @@ type JinoMail struct {
 	config *Config
 }
 
-func New(config *Config) *JinoMail{
+func New(config *Config, sendTestMessage bool) *JinoMail{
 
 	jinoMail := JinoMail{config: config}
 
-	if jinoMail.config.AdminAddress != "" {
+	if jinoMail.config.AdminAddress != "" && sendTestMessage {
 		go jinoMail.SendMail(jinoMail.config.AdminAddress, " server is running", "test message")
 	}
 
@@ -45,7 +45,7 @@ func (jmail *JinoMail) SendMail(address string, messageHTML string, subject stri
 	
 	msg := gomail.NewMessage()
 	msg.SetHeader("From", jmail.config.User)
-	msg.SetHeader("To", jmail.config.AdminAddress)
+	msg.SetHeader("To", address)
 	msg.SetHeader("Subject", subject)
 	msg.SetBody("text/html", messageHTML)
 
@@ -66,4 +66,3 @@ func (jmail *JinoMail) SendCode(address string, code string) error {
 	subject := "Запрос на авторизацию"
 	return jmail.SendMail(address, msg, subject)
 }
-

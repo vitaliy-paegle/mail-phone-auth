@@ -16,7 +16,7 @@ func NewRepository(postgres *postgres.Postgres) *Repository {
 	return &repository
 }
 
-func(r *Repository) Read(ID int) (*User, error) {
+func (r *Repository) Read(ID int) (*User, error) {
 	var user User
 
 	result := r.postgres.DB.First(&user, ID)
@@ -29,22 +29,21 @@ func(r *Repository) Read(ID int) (*User, error) {
 }
 
 func (r *Repository) ReadByEmail(email string) (*User, error) {
-	return  nil, nil
+	return nil, nil
 }
 
-func (r *Repository) ReadAll (limit int, offset int) []User {
+func (r *Repository) ReadAll(limit int, offset int) []User {
 	var users []User
 
 	r.postgres.DB.Table("users").
-	Where("deleted_at is NULL").
-	Order("id ASC").
-	Limit(limit).
-	Offset(offset).
-	Scan(&users)
+		Where("deleted_at is NULL").
+		Order("id ASC").
+		Limit(limit).
+		Offset(offset).
+		Scan(&users)
 
 	return users
 }
-
 
 func (r *Repository) Create(user *User) error {
 	result := r.postgres.DB.Create(user)
@@ -57,7 +56,7 @@ func (r *Repository) Create(user *User) error {
 }
 
 func (r *Repository) Update(user *User) error {
-	
+
 	result := r.postgres.DB.Updates(user)
 
 	if result.Error != nil {
@@ -67,7 +66,7 @@ func (r *Repository) Update(user *User) error {
 	}
 }
 
-func (r *Repository) Delete(ID int) (error) {
+func (r *Repository) Delete(ID int) error {
 	result := r.postgres.DB.Delete(&User{}, ID)
 
 	if result.Error != nil {
@@ -76,4 +75,3 @@ func (r *Repository) Delete(ID int) (error) {
 		return nil
 	}
 }
-

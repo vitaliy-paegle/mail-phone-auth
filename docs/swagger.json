@@ -1,8 +1,27 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "OpenApiTitle",
-        "contact": {}
+        "description": "---",
+        "title": "API Пользователи и авторизация",
+        "contact": {},
+        "version": "1.0"
     },
-    "paths": {}
+    "paths": {
+        "/api/user/{id}": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get User by ID",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        }
+    }
 }

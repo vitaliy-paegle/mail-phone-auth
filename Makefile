@@ -39,4 +39,5 @@ swagger_version:
 	$(GOPATH)/bin/swag -v
 
 swagger_docs:
-	$(GOPATH)/bin/swag init -d ./internal/api/,./internal/entities/ -g api.go --pd --parseInternal
+	$(GOPATH)/bin/swag fmt
+	$(GOPATH)/bin/swag init -g ./internal/api/api.go

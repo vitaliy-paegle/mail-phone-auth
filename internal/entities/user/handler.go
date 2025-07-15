@@ -63,12 +63,11 @@ func (handler *Handler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get User
-// @summary  Get User by ID
-// @router   /api/user/{id} [get]
-// @tags     user
-// @success  200
-// @failure  400
-
+//	@summary	Get User by ID
+//	@router		/api/user/{id} [get]
+//	@tags		user
+//	@success	200
+//	@failure	400
 func (handler *Handler) Read(w http.ResponseWriter, r *http.Request) {
 	idString := r.PathValue("id")
 	id, err := strconv.Atoi(idString)

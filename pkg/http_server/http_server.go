@@ -16,42 +16,49 @@ type Config struct {
 // 	"port": "1000"
 // }
 
-type HttpServer struct{
+type HttpServer struct {
 	Config *Config
 	Server *http.Server
 	Router *http.ServeMux
 }
 
-func New(config *Config, router *http.ServeMux) *HttpServer {
+func New(config *Config, router *http.ServeMux, staticFileSystem *http.FileSystem) *HttpServer {
 
 	const readTimeout = 5
 	const writeTimeout = 5
 
 	server := http.Server{
-		Addr: ":" + config.Port,
-		Handler: router,
-		ReadTimeout: readTimeout * time.Second,
+		Addr:         ":" + config.Port,
+		Handler:      router,
+		ReadTimeout:  readTimeout * time.Second,
 		WriteTimeout: writeTimeout * time.Second,
 	}
- 
-	return  &HttpServer{
+
+	httpServer := HttpServer{
 		Config: config,
 		Server: &server,
-		Router: router,		
+		Router: router,
 	}
+
+
+	httpServer.Router.Handle("/static/",  http.FileServer(*staticFileSystem))
+	// httpServer.Router.Handle("/data/", http.StripPrefix("/data",  http.FileServer(http.Dir("./static"))))
+
+	return &httpServer
 }
+
 
 func (httpServer *HttpServer) Run() error {
 	log.Println("Server is listening port: " + httpServer.Config.Port)
 	err := httpServer.Server.ListenAndServe()
 	if err != nil {
-		return  err
+		return err
 	} else {
-		return  nil
+		return nil
 	}
 
 }
 
-func (httpServer *HttpServer) Stop()  {
+func (httpServer *HttpServer) Stop() {
 	httpServer.Server.Shutdown(context.Background())
 }

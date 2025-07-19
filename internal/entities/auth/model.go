@@ -6,5 +6,5 @@ type Auth struct {
 	gorm.Model
 	Email string `json:"email"`
 	Phone string `json:"phone"`
-	Code string	`json:"code"`
+	Code  string `json:"code"`
 }

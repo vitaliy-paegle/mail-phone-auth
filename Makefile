@@ -5,6 +5,12 @@ GOROOT=$(shell go env GOROOT)
 hello: 
 	echo 'HelloWorld! GOPATH: $(GOPATH)  GOROOT: $(GOROOT)'
 
+format:
+	gofmt -w .
+
+format_test:
+	gofmt -l .
+
 go_clear:
 	go mod tidy
 
@@ -41,3 +47,6 @@ swagger_version:
 swagger_docs:
 	$(GOPATH)/bin/swag fmt
 	$(GOPATH)/bin/swag init -g ./internal/api/api.go
+
+openapi_gen:
+	$(GOPATH)/bin/oapi-codegen --config=./internal/api/openapi/config.json ./internal/api/openapi/openapi.json

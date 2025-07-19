@@ -3,4 +3,5 @@
 /bin
 /pg-data
 postgres.env
+/internal/api/openapi/examples
 

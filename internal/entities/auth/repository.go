@@ -11,7 +11,7 @@ type Repository struct {
 func NewRepository(postgres *postgres.Postgres) *Repository {
 	repository := Repository{postgres: postgres}
 
-	return  &repository
+	return &repository
 }
 
 func (r *Repository) CreateEmailAuth(auth *Auth) error {

@@ -7,22 +7,21 @@ import (
 	"net/http"
 )
 
-
 type Controller struct {
-	router *http.ServeMux
+	router     *http.ServeMux
 	repository *Repository
 }
 
 func NewController(router *http.ServeMux, repository *Repository) *Controller {
 	controller := Controller{
-		router: router,
+		router:     router,
 		repository: repository,
 	}
 
 	controller.router.HandleFunc("POST /api/auth/email", controller.CreateEmailAuth)
 	controller.router.HandleFunc("POST /api/auth/email/confirm", controller.ConfirmEmailAuth)
 
-	return  &controller
+	return &controller
 }
 
 func (c *Controller) CreateEmailAuth(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +35,7 @@ func (c *Controller) CreateEmailAuth(w http.ResponseWriter, r *http.Request) {
 
 	auth := Auth{
 		Email: body.Email,
-		Code: "1234",
+		Code:  "1234",
 	}
 
 	err = c.repository.CreateEmailAuth(&auth)
@@ -49,15 +48,8 @@ func (c *Controller) CreateEmailAuth(w http.ResponseWriter, r *http.Request) {
 
 	response.JSON(w, &auth, http.StatusCreated)
 
-		
-	
-
-
-
-
 }
 
 func (controller *Controller) ConfirmEmailAuth(w http.ResponseWriter, r *http.Request) {
 
 }
-

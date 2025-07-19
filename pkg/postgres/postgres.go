@@ -7,12 +7,12 @@ import (
 )
 
 type Config struct {
-	Host string `json:"host" validate:"required"`
-	User string `json:"user" validate:"required"`
+	Host     string `json:"host" validate:"required"`
+	User     string `json:"user" validate:"required"`
 	Password string `json:"password" validate:"required"`
-	DBname string `json:"dbname" validate:"required"`
-	Port string `json:"port" validate:"required"`
-	SSLmode string `json:"sslmode" validate:"required"`
+	DBname   string `json:"dbname" validate:"required"`
+	Port     string `json:"port" validate:"required"`
+	SSLmode  string `json:"sslmode" validate:"required"`
 }
 
 // postgres.json
@@ -35,9 +35,9 @@ func NewPostgres(config *Config) (*Postgres, error) {
 	postgres, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		return  nil, err
+		return nil, err
 	} else {
 		return &Postgres{postgres}, nil
-	}	
+	}
 
 }

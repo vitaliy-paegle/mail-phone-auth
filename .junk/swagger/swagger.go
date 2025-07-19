@@ -1,9 +1,9 @@
 package swagger
 
 import (
-	"net/http"
-	_ "mail-phone-auth/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
+	// _ "mail-phone-auth/docs"
+	"net/http"
 )
 
 type Swagger struct {
@@ -14,12 +14,12 @@ func New(router *http.ServeMux) *Swagger {
 	swagger := Swagger{
 		router: router,
 	}
-	router.Handle("GET /swagger/", swagger.Handler())
+	router.Handle("GET /", swagger.Handler())
 
 	return &swagger
 }
 
-func (swagger *Swagger) Handler() http.HandlerFunc {	
+func (swagger *Swagger) Handler() http.HandlerFunc {
 	return httpSwagger.Handler(
 		httpSwagger.URL("/swagger/doc.json"),
 		swagger.AfterScript(),
@@ -41,6 +41,5 @@ func (swagger *Swagger) AfterScript() func(*httpSwagger.Config) {
 				setTimeout(deleteLink, 100)
 			}
 		}
-	`)		
+	`)
 }
-

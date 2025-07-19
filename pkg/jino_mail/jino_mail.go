@@ -9,10 +9,10 @@ import (
 )
 
 type Config struct {
-	Host string `json:"host" validate:"required"`
-	Port int `json:"port" validate:"required"`
-	User string `json:"user" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Host         string `json:"host" validate:"required"`
+	Port         int    `json:"port" validate:"required"`
+	User         string `json:"user" validate:"required"`
+	Password     string `json:"password" validate:"required"`
 	AdminAddress string `json:"admin_address" validate:"omitempty,email"`
 }
 
@@ -29,7 +29,7 @@ type JinoMail struct {
 	config *Config
 }
 
-func New(config *Config, sendTestMessage bool) *JinoMail{
+func New(config *Config, sendTestMessage bool) *JinoMail {
 
 	jinoMail := JinoMail{config: config}
 
@@ -40,9 +40,8 @@ func New(config *Config, sendTestMessage bool) *JinoMail{
 	return &jinoMail
 }
 
-
 func (jmail *JinoMail) SendMail(address string, messageHTML string, subject string) error {
-	
+
 	msg := gomail.NewMessage()
 	msg.SetHeader("From", jmail.config.User)
 	msg.SetHeader("To", address)
@@ -54,11 +53,11 @@ func (jmail *JinoMail) SendMail(address string, messageHTML string, subject stri
 
 	err := dialer.DialAndSend(msg)
 
-	if (err != nil) {
+	if err != nil {
 		log.Println("JINO MAIL ERROR: ", err)
-		return  err
-	}	
-	return  nil
+		return err
+	}
+	return nil
 }
 
 func (jmail *JinoMail) SendCode(address string, code string) error {

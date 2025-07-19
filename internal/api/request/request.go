@@ -2,17 +2,18 @@ package request
 
 import (
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"io"
 	"log"
-	"github.com/go-playground/validator/v10"
 )
-
 
 func DecodeBody[T any](body io.ReadCloser) (T, error) {
 	var data T
-	
+
 	err := json.NewDecoder(body).Decode(&data)
-	if err != nil {return data, err}
+	if err != nil {
+		return data, err
+	}
 
 	err = Validate(data)
 	if err != nil {

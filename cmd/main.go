@@ -22,7 +22,7 @@ func stopSignalHandler(handler func()) {
 
 	signalChannel := make(chan os.Signal, 1)
 	signal.Notify(signalChannel, syscall.SIGINT, syscall.SIGTERM)
-	sig := <- signalChannel
+	sig := <-signalChannel
 
 	fmt.Printf("\n Stop signal: %v \n", sig)
 
@@ -32,6 +32,3 @@ func stopSignalHandler(handler func()) {
 
 	fmt.Println("Program stoped")
 }
-
-
-

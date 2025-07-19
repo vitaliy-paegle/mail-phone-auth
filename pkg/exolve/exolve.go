@@ -10,20 +10,20 @@ import (
 	"strings"
 )
 
-
 type Config struct {
-	PhoneNumber string `json:"phone_number" validate:"required"`
-	Key string `json:"key" validate:"required"`
+	PhoneNumber      string `json:"phone_number" validate:"required"`
+	Key              string `json:"key" validate:"required"`
 	AdminPhoneNumber string `json:"admin_phone_number" validate:"omitempty"`
 }
-	// exolve.json
-	// "phone_number": "79581235656",
-	// "key": "efgRi65jdfefffERR",
-	// "admin_phone_number": "79584567890"
+
+// exolve.json
+// "phone_number": "79581235656",
+// "key": "efgRi65jdfefffERR",
+// "admin_phone_number": "79584567890"
 
 type Exolve struct {
 	config *Config
-	path string 
+	path   string
 }
 
 func New(config *Config, sendTestMessage bool) *Exolve {
@@ -38,15 +38,14 @@ func New(config *Config, sendTestMessage bool) *Exolve {
 	return &exolve
 }
 
-
 func (exolve *Exolve) SendSms(to string, text string) error {
-	
+
 	client := &http.Client{}
 
 	requestData := SendSmsRequestData{
-		Number: exolve.config.PhoneNumber,
+		Number:      exolve.config.PhoneNumber,
 		Destination: to,
-		Text: text,
+		Text:        text,
 	}
 
 	data, err := json.Marshal(requestData)
@@ -66,9 +65,9 @@ func (exolve *Exolve) SendSms(to string, text string) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-  req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", exolve.config.Key))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", exolve.config.Key))
 
-	resp, err := client.Do(req)	
+	resp, err := client.Do(req)
 
 	if err != nil {
 		log.Println("EXOLVE ERR: ", err)
@@ -85,16 +84,15 @@ func (exolve *Exolve) SendSms(to string, text string) error {
 	}
 
 	log.Println(string(body))
-	return  nil
+	return nil
 
 }
 
-
 func (exolve *Exolve) SendCode(phone_number string, code string) error {
 	to := strings.ReplaceAll(phone_number, "+", "")
-	
-	template := 
-	`
+
+	template :=
+		`
 		Запрос на авторизацию.
 		Код подтверждения: {code}
 	`

@@ -1,0 +1,154 @@
+{
+	"openapi": "3.1.1",
+	"info": {
+		"title": "API Авторизация и пользователи",
+		"version": "1.0",
+		"contact": {
+			"email": "unite-tech@yandex.ru"
+		}
+	},
+	"servers": [
+		{
+			"url": "https://api.unitetech.ru"
+		}
+	],
+	"tags": [
+		{
+			"name": "auth",
+			"description": "Авторизация"
+		},
+		{
+			"name": "user",
+			"description": "Работа с пользователями"
+		}
+	],
+	"paths": {
+		"/api/auth/email/code": {
+			"post": {
+				"tags": [
+					"auth"
+				],
+				"summary": "Код авторизации",
+				"description": "Запрос кода авторизации на электронную почту",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AuthEmailCodeRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK"
+					},
+					"default": {
+						"description": "Error",
+						"content": {							
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/email/confirm": {
+			"post": {
+				"tags": [
+					"auth"
+				],
+				"summary": "Авторизация пользователя",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AuthEmailConfirmRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthEmailConfirmResponse"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"Error": {
+				"type":"object",
+				"required": ["message"],
+				"properties": {
+					"message": {
+						"type": "string"
+					}
+				}
+			},
+			"AuthEmailCodeRequest": {
+				"type":"object",
+				"required": ["email"],
+				"properties": {
+					"email": {
+						"type": "string",
+						"example": "info@mail.com"
+					}
+				}
+			},
+			"AuthEmailConfirmRequest": {
+				"type":"object",
+				"required": [
+					"email",
+					"code"
+				],
+				"properties": {
+					"email": {
+						"type": "string",
+						"example": "info@mail.com"
+					},
+					"code": {
+						"type": "string",
+						"example": "1234"
+					}
+				}
+			},
+			"AuthEmailConfirmResponse": {
+				"type": "object",
+				"required": ["accessToken", "refreshToken"],
+				"properties": {
+					"accessToken": {
+						"type": "string",
+						"example": "JwtToken"
+					},
+					"refreshToken": {
+						"type": "string",
+						"example": "JwtToken"
+					}
+				}
+			}
+		}
+	}
+
+}

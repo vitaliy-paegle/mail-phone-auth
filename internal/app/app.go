@@ -15,12 +15,12 @@ import (
 
 type App struct {
 	staticFileSystem *http.FileSystem
-	api        *api.API
-	httpServer *http_server.HttpServer
-	postgres   *postgres.Postgres
-	jwt        *jwt.JWT
-	jinoMail   *jino_mail.JinoMail
-	exolve     *exolve.Exolve
+	api              *api.API
+	httpServer       *http_server.HttpServer
+	postgres         *postgres.Postgres
+	jwt              *jwt.JWT
+	jinoMail         *jino_mail.JinoMail
+	exolve           *exolve.Exolve
 }
 
 func NewApp() *App {
@@ -65,7 +65,7 @@ func NewApp() *App {
 	}
 
 	// Create API:
-	app.api = api.New(app.postgres, app.jwt)
+	app.api = api.New(app.postgres, app.jwt, app.jinoMail)
 
 	// Create HttpServer:
 	httpConfig, err := files.InitConfig[http_server.Config](httpServerConfigFilePath)

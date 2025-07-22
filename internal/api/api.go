@@ -4,6 +4,7 @@ import (
 	"log"
 	"mail-phone-auth/internal/entities/auth"
 	"mail-phone-auth/internal/entities/user"
+	"mail-phone-auth/pkg/jino_mail"
 	"mail-phone-auth/pkg/jwt"
 	"mail-phone-auth/pkg/postgres"
 	"net/http"
@@ -15,20 +16,22 @@ type API struct {
 	Router         *http.ServeMux
 	postgres       *postgres.Postgres
 	jwt            *jwt.JWT
+	jinoMail       *jino_mail.JinoMail
 	authRepository *auth.Repository
 	authController *auth.Controller
 	userRepository *user.Repository
 	userHandler    *user.Handler
 }
 
-func New(postgres *postgres.Postgres, jwt *jwt.JWT) *API {
+func New(postgres *postgres.Postgres, jwt *jwt.JWT, jinoMail *jino_mail.JinoMail) *API {
 	api := API{}
 	api.Router = http.NewServeMux()
 	api.postgres = postgres
 	api.jwt = jwt
+	api.jinoMail = jinoMail
 
 	api.authRepository = auth.NewRepository(api.postgres)
-	api.authController = auth.NewController(api.Router, api.authRepository)
+	api.authController = auth.NewController(api.Router, api.authRepository, api.jinoMail)
 
 	api.userRepository = user.NewRepository(api.postgres)
 	api.userHandler = user.NewHandler(api.Router, api.userRepository, &api)

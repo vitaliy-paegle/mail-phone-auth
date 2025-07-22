@@ -40,13 +40,11 @@ func New(config *Config, router *http.ServeMux, staticFileSystem *http.FileSyste
 		Router: router,
 	}
 
-
-	httpServer.Router.Handle("/static/",  http.FileServer(*staticFileSystem))
+	httpServer.Router.Handle("/static/", http.FileServer(*staticFileSystem))
 	// httpServer.Router.Handle("/data/", http.StripPrefix("/data",  http.FileServer(http.Dir("./static"))))
 
 	return &httpServer
 }
-
 
 func (httpServer *HttpServer) Run() error {
 	log.Println("Server is listening port: " + httpServer.Config.Port)

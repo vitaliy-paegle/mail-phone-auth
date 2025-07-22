@@ -1,8 +1,6 @@
 package auth
 
-import "mail-phone-auth/pkg/jwt"
-
-type AuthEmailRequest struct {
+type AuthEmailCodeRequest struct {
 	Email string `json:"email" validate:"required,email"`
 }
 
@@ -11,6 +9,7 @@ type AuthEmailConfirmRequest struct {
 	Code  string `json:"code" validate:"required"`
 }
 
-type AuthResponse struct {
-	jwt.TokensSet
+type AuthEmailConfirmResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
 }

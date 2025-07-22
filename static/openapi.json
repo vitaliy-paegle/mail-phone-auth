@@ -48,7 +48,7 @@
 						"content": {							
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Error"
+									"$ref": "#/components/schemas/ErrorData"
 								}
 							}
 						}
@@ -87,7 +87,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Error"
+									"$ref": "#/components/schemas/ErrorData"
 								}
 							}
 						}
@@ -98,7 +98,7 @@
 	},
 	"components": {
 		"schemas": {
-			"Error": {
+			"ErrorData": {
 				"type":"object",
 				"required": ["message"],
 				"properties": {

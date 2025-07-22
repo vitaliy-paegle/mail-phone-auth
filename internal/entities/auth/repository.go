@@ -15,10 +15,29 @@ func NewRepository(postgres *postgres.Postgres) *Repository {
 }
 
 func (r *Repository) CreateEmailAuth(auth *Auth) error {
+
 	result := r.postgres.DB.Create(auth)
 
 	if result.Error != nil {
 		return result.Error
+	} else {
+		return nil
+	}
+
+}
+
+func (r *Repository) ReadLastAuthByEmail(email string) *Auth {
+
+	var authList []Auth
+
+	r.postgres.Table("auths").
+		Where("email = ?", email).
+		Where("deleted_at is NULL").
+		Order("created_at DESC").
+		Scan(&authList)
+
+	if len(authList) > 0 {
+		return &authList[0]
 	} else {
 		return nil
 	}

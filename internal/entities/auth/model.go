@@ -1,10 +1,12 @@
 package auth
 
-import "gorm.io/gorm"
+import (
+	"mail-phone-auth/internal/api/data"
+)
 
 type Auth struct {
-	gorm.Model
-	Email string `json:"email"`
-	Phone string `json:"phone"`
-	Code  string `json:"code"`
+	data.Base
+	Email string `json:"email,omitempty" gorm:"column:email;comment:Электронная почта пользователя"`
+	Phone string `json:"phone,omitempty" gorm:"column:phone;comment:Телефон пользователя"`
+	Code  string `json:"code" gorm:"column:code;comment:Код подтверждения авторизации;not null"`
 }

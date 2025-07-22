@@ -6,10 +6,9 @@ import (
 )
 
 //go:embed static/*
-var staticFS embed.FS	
+var staticFS embed.FS
 var fs = http.FS(staticFS)
 
-func New() *http.FileSystem{
+func New() *http.FileSystem {
 	return &fs
 }
-

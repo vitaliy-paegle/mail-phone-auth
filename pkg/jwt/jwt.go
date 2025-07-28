@@ -1,6 +1,13 @@
 package jwt
 
-import ()
+import (
+	"errors"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+)
+
+
 
 type Config struct {
 	Secret        string `json:"secret" validate:"required"`
@@ -15,15 +22,12 @@ type Config struct {
 // 	"refresh_period": 120
 // }
 
-type UserData struct {
-	ID    int    `json:"id"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
-}
 
 type TokenData struct {
-	User *UserData `json:"user"`
-	Exp  int       `json:"exp"`
+	jwt.RegisteredClaims
+	UserID uint `json:"user_id"`
+	RoleName string `json:"role_name"`
+	Exp int64 `json:"exp"`
 }
 
 type TokensSet struct {
@@ -42,20 +46,79 @@ func New(config *Config) *JWT {
 	return &jwt
 }
 
-func (jwt *JWT) CreateTokens(user *UserData) (*TokensSet, error) {
+func (j *JWT) CreateTokens(userID uint) (*TokensSet, error) {
 
-	// accessTokenData := TokenData{
-	// 	User: user,
-	// 	Exp: int(time.Now().Unix()) + jwt.config.AccsessPeriod,
-	// }
+	accessClaims := TokenData{
+		RegisteredClaims: jwt.RegisteredClaims{},
+		UserID: userID,
+		Exp: time.Now().Add(time.Duration(j.config.AccsessPeriod)*time.Second).Unix(),
+	}
 
-	tokensSet := TokensSet{}
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+
+	accessTokenString, err := accessToken.SignedString([]byte(j.config.Secret))
+
+	if err != nil {
+		return nil, err
+	}
+
+	refreshClaims := TokenData{
+		RegisteredClaims: jwt.RegisteredClaims{},
+		UserID: userID,
+		Exp: time.Now().Add(time.Duration(j.config.RefreshPeriod)*time.Second).Unix(),
+	}
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+
+	refreshTokenString, err := refreshToken.SignedString([]byte(j.config.Secret))
+
+	if err != nil {
+		return nil, err
+	}
+
+	tokensSet := TokensSet{
+		Access: accessTokenString,
+		Refresh: refreshTokenString,
+	}
 
 	return &tokensSet, nil
 }
 
-func (jwt *JWT) UpdateTokens(refreshToken string) (*TokensSet, error) {
-	tokensSet := TokensSet{}
+func (j *JWT) ParseToken(tokenString string) (*TokenData, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &TokenData{}, func(token *jwt.Token) (any, error) {
+		return []byte(j.config.Secret), nil
+	})
 
-	return &tokensSet, nil
+	if err != nil {
+		return nil, err
+	}
+
+	tokenData := token.Claims.(*TokenData)
+
+	if tokenData.Exp < time.Now().Unix() {
+		return nil, errors.New("expire token")
+	}
+
+	return tokenData, nil	
 }
+
+
+
+func (j *JWT) UpdateTokens(refreshToken string) (*TokensSet, error) {
+
+	tokenData, err := j.ParseToken(refreshToken)
+
+	if err != nil {
+		return nil, err
+	}
+
+	tokensSet, err := j.CreateTokens(tokenData.UserID)
+
+	if err != nil {
+		return  nil, err
+	}
+
+	return tokensSet, nil
+}
+
+

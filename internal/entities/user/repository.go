@@ -29,20 +29,34 @@ func (r *Repository) Read(ID int) (*User, error) {
 }
 
 func (r *Repository) ReadByEmail(email string) (*User, error) {
-	return nil, nil
+	var user User
+
+	result := r.postgres.DB.Table("users").
+	Where("email = ?", email).
+	First(&user)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
 }
 
-func (r *Repository) ReadAll(limit int, offset int) []User {
+func (r *Repository) ReadAll(limit int, offset int) ([]User, error) {
 	var users []User
 
-	r.postgres.DB.Table("users").
-		Where("deleted_at is NULL").
-		Order("id ASC").
-		Limit(limit).
-		Offset(offset).
-		Scan(&users)
+	result := r.postgres.DB.Table("users").
+	Where("deleted_at is NULL").
+	Order("id ASC").
+	Limit(limit).
+	Offset(offset).
+	Scan(&users)
 
-	return users
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return users, nil
 }
 
 func (r *Repository) Create(user *User) error {

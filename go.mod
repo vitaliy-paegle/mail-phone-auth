@@ -53,6 +53,7 @@ require (
 )
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.3
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/swaggest/swgui v1.8.4

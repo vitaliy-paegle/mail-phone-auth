@@ -2,6 +2,7 @@ package auth
 
 import (
 	"mail-phone-auth/pkg/postgres"
+	"time"
 )
 
 type Repository struct {
@@ -41,5 +42,19 @@ func (r *Repository) ReadLastAuthByEmail(email string) *Auth {
 	} else {
 		return nil
 	}
+
+}
+
+func (r *Repository) Delete(ID uint) error {
+
+	result := r.postgres.DB.Table("auths").
+	Where("id = ?", ID).
+	Update("deleted_at", time.Now())
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 
 }

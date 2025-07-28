@@ -20,7 +20,7 @@ type API struct {
 	authRepository *auth.Repository
 	authController *auth.Controller
 	userRepository *user.Repository
-	userHandler    *user.Handler
+	userController    *user.Controller
 }
 
 func New(postgres *postgres.Postgres, jwt *jwt.JWT, jinoMail *jino_mail.JinoMail) *API {
@@ -30,11 +30,13 @@ func New(postgres *postgres.Postgres, jwt *jwt.JWT, jinoMail *jino_mail.JinoMail
 	api.jwt = jwt
 	api.jinoMail = jinoMail
 
-	api.authRepository = auth.NewRepository(api.postgres)
-	api.authController = auth.NewController(api.Router, api.authRepository, api.jinoMail)
-
 	api.userRepository = user.NewRepository(api.postgres)
-	api.userHandler = user.NewHandler(api.Router, api.userRepository, &api)
+	api.userController = user.NewController(api.Router, api.userRepository, &api)
+
+	api.authRepository = auth.NewRepository(api.postgres)
+	api.authController = auth.NewController(api.Router, api.authRepository, api.jinoMail, api.jwt, api.userRepository)
+
+
 
 	api.OpenAPIconnect()
 

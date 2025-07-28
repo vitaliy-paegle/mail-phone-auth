@@ -1,19 +1,12 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"mail-phone-auth/internal/api/data"
+)
 
 type User struct {
-	gorm.Model
-	Name  string `json:"name"`
-	Phone string `json:"phone" gorm:"uniqueIndex"`
-	Email string `json:"email" gorm:"uniqueIndex"`
-}
-
-func NewUser(data UserCreateRequest) *User {
-	user := User{
-		Name:  data.Name,
-		Phone: data.Phone,
-		Email: data.Email,
-	}
-	return &user
+	data.Base
+	Name  string `json:"name" gorm:"column:name;comment:Имя пользователя;default:null"`
+	Phone string `json:"phone" gorm:"column:phone;comment:Номер телефона;unique;default:null"`
+	Email string `json:"email" gorm:"column:email;comment:Электронная почта;unique;default:null"`
 }

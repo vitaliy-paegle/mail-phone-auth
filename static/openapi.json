@@ -77,7 +77,269 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/AuthEmailConfirmResponse"
+									"$ref": "#/components/schemas/AuthJwtTokens"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorData"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/refresh": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Обновление токенов",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AuthRefreshRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/AuthJwtTokens"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorData"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user": {
+			"post": {
+				"tags": ["user"],
+				"summary": "Создать пользователя",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserCreateRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorData"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/{id}": {
+			"get": {
+				"tags": ["user"],
+				"summary": "Получить пользователя",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "Идентификатор",
+						"schema":{
+							"type":"integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorData"
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"tags": [
+					"user"
+				],
+				"summary": "Обновить пользователя",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "Идентификатор",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"requestBody":{
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorData"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"user"
+				],
+				"summary": "Удалить пользователя",
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "Идентификатор",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						}
+					},
+					"default": {
+						"description": "Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorData"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user/all": {
+			"get": {
+				"tags": [
+					"user"
+				],
+				"summary": "Получить пользователей",
+				"parameters": [
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"description": "Количество пользователей",
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"description": "Отступ",
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type":"object",
+									"properties": {
+										"users": {
+											"type":"array",
+											"items": {
+												"$ref": "#/components/schemas/User"
+											}
+										},
+										"count": {
+											"type":"integer",
+											"example": "0"
+										}
+									}
 								}
 							}
 						}
@@ -95,9 +357,32 @@
 				}
 			}
 		}
+
 	},
 	"components": {
 		"schemas": {
+			"Base": {
+				"type":"object",
+				"required": ["id", "createdAt", "updatedAt"],
+				"properties": {
+					"id": {
+						"type":"integer",
+						"example": 1
+					},
+					"createdAt": {
+						"type": "string",
+						"example": "2000-00-00 00:00:00.0+00"
+					},
+					"updatedAt": {
+						"type": "string",
+						"example": "2000-00-00 00:00:00.0+00"
+					},
+					"deletedAt": {
+						"type": "string",
+						"example": "2000-00-00 00:00:00.0+00"
+					}
+				}
+			},
 			"ErrorData": {
 				"type":"object",
 				"required": ["message"],
@@ -134,21 +419,101 @@
 					}
 				}
 			},
-			"AuthEmailConfirmResponse": {
+			"AuthJwtTokens": {
 				"type": "object",
 				"required": ["accessToken", "refreshToken"],
 				"properties": {
 					"accessToken": {
 						"type": "string",
-						"example": "JwtToken"
+						"example": "jwt token string"
 					},
 					"refreshToken": {
 						"type": "string",
-						"example": "JwtToken"
+						"example": "jwt token string"
 					}
 				}
+			},
+			"AuthRefreshRequest": {
+				"type": "object",
+				"required": ["refreshToken"],
+				"properties": {
+					"refreshToken": {
+						"type":"string",
+						"example": "jwt token string"
+					}
+				}
+			},
+			"User": {
+				"type": "object",
+				"required": ["email"],
+				"allOf": [
+					{"$ref": "#/components/schemas/Base"}
+				],
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "Иван Иванов"
+					},
+					"email": {
+						"type": "string",
+						"example": "info@mail.ru"
+					},
+					"phone": {
+						"type": "string",
+						"example": "+71232211"
+					}					
+				}				
+			},
+			"UserCreateRequest": {
+				"type": "object",
+				"required": [
+					"email"
+				],
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "Иван Иванов"
+					},
+					"email": {
+						"type": "string",
+						"example": "info@mail.ru"
+					},
+					"phone": {
+						"type": "string",
+						"example": "+71232211"
+					}
+				}
+			},
+			"UserUpdateRequest": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "Иван Иванов"
+					},
+					"email": {
+						"type": "string",
+						"example": "info@mail.ru"
+					},
+					"phone": {
+						"type": "string",
+						"example": "+71232211"
+					}
+				}
+			}			
+		},
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
 			}
 		}
-	}
+	},
+	"security": [
+		{
+			"bearerAuth": []
+		}
+	]
 
 }

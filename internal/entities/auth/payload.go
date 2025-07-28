@@ -9,7 +9,11 @@ type AuthEmailConfirmRequest struct {
 	Code  string `json:"code" validate:"required"`
 }
 
-type AuthEmailConfirmResponse struct {
+type AuthJwtTokens struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
+}
+
+type AuthRefreshRequest struct {
+	RefreshToken string `json:"refreshToken" validate:"required"`
 }

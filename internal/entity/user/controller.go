@@ -4,9 +4,9 @@ import (
 	"log"
 	"mail-phone-auth/internal/api/request"
 	"mail-phone-auth/internal/api/response"
+	"mail-phone-auth/internal/entity"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type IAPI interface {
@@ -47,25 +47,18 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := &User{}
-		log.Println("DeletedAt: ", user.DeletedAt, "UserPhone: ", user.Phone, user.CreatedAt)
+	user := User{}
 
-	user.Email = body.Email
+	entity.Update(&user, &body)	
 
-	user.CreatedAt = time.Now()
-	user.UpdatedAt = time.Now()
-
-
-
-
-	err = c.Repository.Create(user)
+	err = c.Repository.Create(&user)
 
 	if err != nil {
 		log.Println(err)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	} else {
-		response.JSON(w, user, http.StatusCreated)
+		response.JSON(w, &user, http.StatusCreated)
 	}
 
 }
@@ -112,7 +105,7 @@ func (c *Controller) ReadAll(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	response.JSON(w, &users, http.StatusOK)
+	response.JSON(w, &UserAllResponse{Users: users, Count: len(users)}, http.StatusOK)
 
 }
 
@@ -135,29 +128,15 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// user := User{
-	// 	Model: gorm.Model{ID: uint(id)},
-	// 	Name: body.Name,
-	// 	Phone: body.Phone,
-	// }
+	user, err := c.Repository.Read(id)
 
+	if err != nil {
+		log.Println(err)
+		response.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-
-	// user, err := c.Repository.Read(id)
-
-	// if err != nil {
-	// 	log.Println(err)
-	// 	response.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
-
-	user := &User{}
-
-	user.ID = uint(id)
-	user.UpdatedAt = time.Now()
-	user.Email = body.Email
-	user.Name = body.Name
-	user.Phone = body.Phone
+	entity.Update(user, &body)
 
 	err = c.Repository.Update(user)
 
@@ -165,9 +144,10 @@ func (c *Controller) Update(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	} else {
-		response.JSON(w, user, http.StatusOK)
 	}
+	
+	response.JSON(w, user, http.StatusOK)
+	
 }
 
 func (c *Controller) Delete(w http.ResponseWriter, r *http.Request) {

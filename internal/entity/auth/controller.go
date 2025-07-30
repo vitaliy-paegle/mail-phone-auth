@@ -6,7 +6,7 @@ import (
 	"log"
 	"mail-phone-auth/internal/api/request"
 	"mail-phone-auth/internal/api/response"
-	"mail-phone-auth/internal/entities/user"
+	"mail-phone-auth/internal/entity/user"
 	"mail-phone-auth/pkg/jino_mail"
 	"mail-phone-auth/pkg/jwt"
 	"net/http"

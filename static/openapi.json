@@ -486,6 +486,9 @@
 			},
 			"UserUpdateRequest": {
 				"type": "object",
+				"required": [
+					"email"
+				],
 				"properties": {
 					"name": {
 						"type": "string",

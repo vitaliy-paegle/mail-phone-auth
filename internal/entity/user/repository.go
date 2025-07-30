@@ -2,6 +2,7 @@ package user
 
 import (
 	"mail-phone-auth/pkg/postgres"
+	"time"
 )
 
 type Repository struct {
@@ -80,9 +81,17 @@ func (r *Repository) Update(user *User) error {
 	}
 }
 
-func (r *Repository) Delete(ID int) error {
-	result := r.postgres.DB.Delete(&User{}, ID)
+func (r *Repository) Delete(id int) error {
+	// result := r.postgres.DB.Delete(&User{}, id)
 
+	user := User{}
+
+	user.ID = uint(id)
+	time := time.Now()
+	user.DeletedAt = &time
+
+	result := r.postgres.DB.Updates(&user)
+	
 	if result.Error != nil {
 		return result.Error
 	} else {

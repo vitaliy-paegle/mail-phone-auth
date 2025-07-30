@@ -9,6 +9,7 @@ import (
 	"mail-phone-auth/pkg/postgres"
 	"net/http"
 
+	"github.com/swaggest/swgui"
 	"github.com/swaggest/swgui/v5emb"
 )
 
@@ -44,7 +45,18 @@ func New(postgres *postgres.Postgres, jwt *jwt.JWT, jinoMail *jino_mail.JinoMail
 }
 
 func (api *API) OpenAPIconnect() {
-	api.Router.Handle("/openapi/", v5emb.New("OpenAPI", "/static/openapi.json", "/openapi/"))
+
+	config := swgui.Config{}
+
+	// Show SCHEMAS: {"defaultModelsExpandDepth": "1"} 
+	config.SettingsUI= map[string]string{"defaultModelsExpandDepth": "-1"} 
+	config.Title = "OpenAPI"
+	config.SwaggerJSON = "/static/openapi.json"
+	config.BasePath = "/"
+
+	handler := v5emb.NewHandlerWithConfig(config)
+
+	api.Router.Handle("/", handler)
 }
 
 func (api *API) TestAPI() {

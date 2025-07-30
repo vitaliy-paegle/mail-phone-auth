@@ -2,7 +2,7 @@ package response
 
 import (
 	"encoding/json"
-	"mail-phone-auth/internal/api/data"
+	"mail-phone-auth/internal/entity"
 	"net/http"
 )
 
@@ -22,7 +22,7 @@ func Error(w http.ResponseWriter, msg string, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
-	errorData := data.Error{
+	errorData := entity.Error{
 		Message: msg,
 	}
 

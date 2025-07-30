@@ -4,19 +4,14 @@ go 1.24.3
 
 require (
 	github.com/go-playground/validator/v10 v10.27.0
-	github.com/swaggo/http-swagger v1.3.4
-	github.com/swaggo/swag v1.16.4
 	gorm.io/gorm v1.30.0
 )
 
 require (
-	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/dprotaso/go-yit v0.0.0-20220510233725-9ba8df137936 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/getkin/kin-openapi v0.132.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.1 // indirect
-	github.com/go-openapi/jsonreference v0.21.0 // indirect
-	github.com/go-openapi/spec v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
@@ -31,14 +26,9 @@ require (
 	github.com/oapi-codegen/oapi-codegen/v2 v2.5.0 // indirect
 	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
 	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
-	github.com/openapi-ui/go-openapi-ui v0.2.0 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
-	github.com/shurcooL/httpfs v0.0.0-20230704072500-f1e31cf0ba5c // indirect
-	github.com/shurcooL/httpgzip v0.0.0-20190720172056-320755c1c1b0 // indirect
-	github.com/shurcooL/vfsgen v0.0.0-20230704071429-0000e147ea92 // indirect
 	github.com/speakeasy-api/jsonpath v0.6.0 // indirect
 	github.com/speakeasy-api/openapi-overlay v0.10.2 // indirect
-	github.com/swaggo/files v1.0.1 // indirect
 	github.com/vearutop/statigz v1.4.0 // indirect
 	github.com/vmware-labs/yaml-jsonpath v0.3.2 // indirect
 	golang.org/x/crypto v0.39.0 // indirect

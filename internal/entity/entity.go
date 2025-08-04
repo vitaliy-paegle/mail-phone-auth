@@ -65,7 +65,7 @@ func (e *Entity[M, B]) Create(w http.ResponseWriter, r *http.Request) {
 	result := e.postgres.DB.Create(model)
 
 	if result.Error != nil {
-		log.Println(err)
+		log.Println(result.Error.Error())
 		response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -128,7 +128,7 @@ func (e *Entity[M, B]) ReadAll(w http.ResponseWriter, r *http.Request) {
 		Scan(&entityList.List)
 
 	if result.Error != nil {
-		log.Println(result.Error)
+		log.Println(result.Error.Error())
 		response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -160,10 +160,16 @@ func (e *Entity[M, B]) Update(w http.ResponseWriter, r *http.Request) {
 
 	model, err := CreateModelInstance[M]()
 
+	if err != nil {
+		log.Println(err)
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	result := e.postgres.DB.First(model, id)
 
 	if result.Error != nil {
-		log.Println(err)
+		log.Println(result.Error.Error())
 		response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -173,7 +179,7 @@ func (e *Entity[M, B]) Update(w http.ResponseWriter, r *http.Request) {
 	result = e.postgres.DB.Updates(model)
 
 	if result.Error != nil {
-		log.Println(err)
+		log.Println(result.Error.Error())
 		response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -194,10 +200,16 @@ func (e *Entity[M, B]) Delete(w http.ResponseWriter, r *http.Request) {
 
 	model, err := CreateModelInstance[M]()
 
+	if err != nil {
+		log.Println(err)
+		response.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	result := e.postgres.DB.First(model, id)
 
 	if result.Error != nil {
-		log.Println(err)
+		log.Println(result.Error.Error())
 		response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -208,7 +220,7 @@ func (e *Entity[M, B]) Delete(w http.ResponseWriter, r *http.Request) {
 		time := time.Now()
 		modelDeletedAt.Set(reflect.ValueOf(&time))
 	} else {
-		err := errors.New("Error update field: 'DeletedAt'")
+		err := errors.New("error update field: 'DeletedAt'")
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -216,7 +228,7 @@ func (e *Entity[M, B]) Delete(w http.ResponseWriter, r *http.Request) {
 	result = e.postgres.DB.Updates(model)
 
 	if result.Error != nil {
-		log.Println(err)
+		log.Println(result.Error.Error())
 		response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -229,7 +241,7 @@ func CreateModelInstance[M any]() (*M, error) {
 	typ := reflect.TypeOf(zero)
 
 	if typ.Kind() != reflect.Struct {
-		return nil, errors.New("Error create model")
+		return nil, errors.New("error create model")
 	}
 	value := reflect.New(typ)
 
@@ -250,7 +262,7 @@ func (e *Entity[M, B]) UpdateData(model *M, body *B) error {
 		if entityField.IsValid() && entityField.CanSet() {
 			entityField.Set(values.Field(index))
 		} else {
-			err := errors.New("Error update field: " + fieldName)
+			err := errors.New("error update field: " + fieldName)
 			return err
 		}
 	}
@@ -260,7 +272,7 @@ func (e *Entity[M, B]) UpdateData(model *M, body *B) error {
 	if entityCreatedAt.IsValid() && entityCreatedAt.CanSet() && entityCreatedAt.IsZero() {
 		entityCreatedAt.Set(reflect.ValueOf(time.Now()))
 	} else {
-		err := errors.New("Error update field: 'CreatedAt'")
+		err := errors.New("error update field: 'CreatedAt'")
 		return err
 	}
 
@@ -269,7 +281,7 @@ func (e *Entity[M, B]) UpdateData(model *M, body *B) error {
 	if entityUpdatedAt.IsValid() && entityUpdatedAt.CanSet() {
 		entityUpdatedAt.Set(reflect.ValueOf(time.Now()))
 	} else {
-		err := errors.New("Error update field: 'UpdatedAt'")
+		err := errors.New("error update field: 'UpdatedAt'")
 		return err
 	}
 

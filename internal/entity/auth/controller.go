@@ -118,7 +118,7 @@ func (c *Controller) EmailConfirm(w http.ResponseWriter, r *http.Request) {
 	auth := c.repository.ReadLastAuthByEmail(body.Email)
 
 	if auth == nil {
-		response.Error(w, "Запрос на авторизацию не найден", http.StatusBadRequest)
+		response.Error(w, "error: Запрос на авторизацию не найден", http.StatusBadRequest)
 		return
 	}
 
@@ -126,13 +126,13 @@ func (c *Controller) EmailConfirm(w http.ResponseWriter, r *http.Request) {
 
 	if duration > codeValidPeriod {
 
-		message := fmt.Sprintf("Код авторизации устарел. Период действия: %s", codeValidPeriod)
+		message := fmt.Sprintf("error: Код авторизации устарел. Период действия: %s", codeValidPeriod)
 		response.Error(w, message, http.StatusBadRequest)
 		return
 	}
 
 	if codeHashString != auth.Code {
-		response.Error(w, "Неверный код подтверждения", http.StatusBadRequest)
+		response.Error(w, "error: Hеверный код подтверждения", http.StatusBadRequest)
 		return
 	}
 

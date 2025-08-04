@@ -47,7 +47,7 @@ func New(config *Config, router *http.ServeMux, staticFileSystem *http.FileSyste
 }
 
 func (httpServer *HttpServer) Run() error {
-	log.Println("Server is listening port: " + httpServer.Config.Port)
+	log.Println("server is listening port: " + httpServer.Config.Port)
 	err := httpServer.Server.ListenAndServe()
 	if err != nil {
 		return err

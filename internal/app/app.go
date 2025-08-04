@@ -11,6 +11,7 @@ import (
 	"mail-phone-auth/pkg/jwt"
 	"mail-phone-auth/pkg/postgres"
 	"net/http"
+	"os"
 )
 
 type App struct {
@@ -30,13 +31,18 @@ func NewApp() *App {
 	const jwtCongigFilePath = "./config/jwt.json"
 	const jinoMailFilePath = "./config/jino_mail.json"
 	const exolveFilePath = "./config/exolve.json"
+	const logFilePath = "./"
+
 
 	app := App{}
+
+	//  Set Logs file
+	app.setLogFile(logFilePath)
 
 	// Create Static File System
 
 	app.staticFileSystem = static.New()
-
+	
 	// Create JWT:
 	jwtConfig, err := files.InitConfig[jwt.Config](jwtCongigFilePath)
 	if err != nil {
@@ -97,4 +103,26 @@ func (app *App) Run() {
 
 func (app *App) Stop() {
 	app.httpServer.Stop()
+}
+
+func (app *App) setLogFile(filePath string) {
+
+	_, err := os.Stat(filePath + "logs")
+
+	if err != nil {
+		err = nil
+		err = os.Mkdir( filePath + "logs", 0755)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+
+	logFile, err := os.Create(filePath + "logs/logs")
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	log.SetOutput(logFile)
+
 }

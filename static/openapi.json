@@ -140,7 +140,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/UserCreateRequest"
+								"$ref": "#/components/schemas/UserData"
 							}
 						}
 					}
@@ -207,7 +207,7 @@
 					}
 				}
 			},
-			"patch": {
+			"put": {
 				"tags": [
 					"user"
 				],
@@ -227,7 +227,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/UserUpdateRequest"
+								"$ref": "#/components/schemas/UserData"
 							}
 						}
 					}
@@ -361,7 +361,7 @@
 	},
 	"components": {
 		"schemas": {
-			"Base": {
+			"GeneralData": {
 				"type":"object",
 				"required": ["id", "createdAt", "updatedAt"],
 				"properties": {
@@ -443,66 +443,34 @@
 					}
 				}
 			},
+			"UserData": {
+				"type": "object",
+				"required": ["email"],
+				"properties": {
+					"name": {
+						"type": "string",
+						"example": "Иван Иванов"
+					},
+					"email": {
+						"type": "string",
+						"example": "info@mail.ru"
+					},
+					"phone": {
+						"type": "string",
+						"example": "+71232211"
+					}
+				}
+			},
 			"User": {
 				"type": "object",
 				"required": ["email"],
 				"allOf": [
-					{"$ref": "#/components/schemas/Base"}
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"example": "Иван Иванов"
-					},
-					"email": {
-						"type": "string",
-						"example": "info@mail.ru"
-					},
-					"phone": {
-						"type": "string",
-						"example": "+71232211"
-					}					
-				}				
-			},
-			"UserCreateRequest": {
-				"type": "object",
-				"required": [
-					"email"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"example": "Иван Иванов"
-					},
-					"email": {
-						"type": "string",
-						"example": "info@mail.ru"
-					},
-					"phone": {
-						"type": "string",
-						"example": "+71232211"
+					{"$ref": "#/components/schemas/GeneralData"},
+					{
+						"$ref": "#/components/schemas/UserData"
 					}
-				}
-			},
-			"UserUpdateRequest": {
-				"type": "object",
-				"required": [
-					"email"
-				],
-				"properties": {
-					"name": {
-						"type": "string",
-						"example": "Иван Иванов"
-					},
-					"email": {
-						"type": "string",
-						"example": "info@mail.ru"
-					},
-					"phone": {
-						"type": "string",
-						"example": "+71232211"
-					}
-				}
+
+				]			
 			}			
 		},
 		"securitySchemes": {

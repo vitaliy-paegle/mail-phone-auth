@@ -2,8 +2,8 @@ package api
 
 import (
 	"log"
-	"mail-phone-auth/internal/entities/auth"
-	"mail-phone-auth/internal/entities/user"
+	"mail-phone-auth/internal/entity/auth"
+	"mail-phone-auth/internal/entity/user"
 	"mail-phone-auth/pkg/jino_mail"
 	"mail-phone-auth/pkg/jwt"
 	"mail-phone-auth/pkg/postgres"
@@ -20,7 +20,6 @@ type API struct {
 	jinoMail       *jino_mail.JinoMail
 	authRepository *auth.Repository
 	authController *auth.Controller
-	userRepository *user.Repository
 	userController    *user.Controller
 }
 
@@ -31,12 +30,10 @@ func New(postgres *postgres.Postgres, jwt *jwt.JWT, jinoMail *jino_mail.JinoMail
 	api.jwt = jwt
 	api.jinoMail = jinoMail
 
-	api.userRepository = user.NewRepository(api.postgres)
-	api.userController = user.NewController(api.Router, api.userRepository, &api)
+	api.userController = user.NewController(api.Router, api.postgres)
 
 	api.authRepository = auth.NewRepository(api.postgres)
-	api.authController = auth.NewController(api.Router, api.authRepository, api.jinoMail, api.jwt, api.userRepository)
-
+	api.authController = auth.NewController(api.Router, api.authRepository, api.jinoMail, api.jwt)
 
 
 	api.OpenAPIconnect()

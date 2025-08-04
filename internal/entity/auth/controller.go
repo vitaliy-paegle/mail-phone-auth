@@ -18,7 +18,6 @@ type Controller struct {
 	repository *Repository
 	jinoMail   *jino_mail.JinoMail
 	jwt *jwt.JWT
-	userRepository *user.Repository
 }
 
 func NewController(
@@ -26,14 +25,12 @@ func NewController(
 	repository *Repository, 
 	jinoMail *jino_mail.JinoMail, 
 	jwt *jwt.JWT,
-	userRepository *user.Repository,
 ) *Controller {
 	controller := Controller{
 		router:     router,
 		repository: repository,
 		jinoMail:   jinoMail,
 		jwt: jwt,
-		userRepository: userRepository,
 	}
 
 	controller.router.HandleFunc("POST /api/auth/email/code", controller.EmailCode)
@@ -139,24 +136,26 @@ func (c *Controller) EmailConfirm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userData, err := c.userRepository.ReadByEmail(body.Email)
+	userData := user.User{}
 
-	if err != nil{
-		if err.Error() == "record not found" {
-			newUser := user.User{
-				Email: body.Email,
-			}
+	result := c.repository.postgres.DB.Table("users").
+	Where("email = ?", body.Email).
+	First(&userData)
 
-			err = c.userRepository.Create(&newUser)
 
-			if err != nil {
-				response.Error(w, err.Error(), http.StatusInternalServerError)
+	if result.Error != nil{
+		if result.Error.Error() == "record not found" {
+			
+			userData.Email = body.Email
+			result = c.repository.postgres.DB.Create(&userData)
+
+			if result.Error != nil {
+				response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 				return
 			}
-			userData = &newUser
 
 		} else {
-			response.Error(w, err.Error(), http.StatusInternalServerError)
+			response.Error(w, result.Error.Error(), http.StatusInternalServerError)
 			return
 		}
 	}

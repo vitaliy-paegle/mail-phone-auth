@@ -17,20 +17,20 @@ type Controller struct {
 	router     *http.ServeMux
 	repository *Repository
 	jinoMail   *jino_mail.JinoMail
-	jwt *jwt.JWT
+	jwt        *jwt.JWT
 }
 
 func NewController(
-	router *http.ServeMux, 
-	repository *Repository, 
-	jinoMail *jino_mail.JinoMail, 
+	router *http.ServeMux,
+	repository *Repository,
+	jinoMail *jino_mail.JinoMail,
 	jwt *jwt.JWT,
 ) *Controller {
 	controller := Controller{
 		router:     router,
 		repository: repository,
 		jinoMail:   jinoMail,
-		jwt: jwt,
+		jwt:        jwt,
 	}
 
 	controller.router.HandleFunc("POST /api/auth/email/code", controller.EmailCode)
@@ -112,7 +112,7 @@ func (c *Controller) EmailConfirm(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
+
 	codeHashString := fmt.Sprintf("%x", sha256.Sum256([]byte(body.Code)))
 
 	auth := c.repository.ReadLastAuthByEmail(body.Email)
@@ -139,13 +139,12 @@ func (c *Controller) EmailConfirm(w http.ResponseWriter, r *http.Request) {
 	userData := user.User{}
 
 	result := c.repository.postgres.DB.Table("users").
-	Where("email = ?", body.Email).
-	First(&userData)
+		Where("email = ?", body.Email).
+		First(&userData)
 
-
-	if result.Error != nil{
+	if result.Error != nil {
 		if result.Error.Error() == "record not found" {
-			
+
 			userData.Email = body.Email
 			result = c.repository.postgres.DB.Create(&userData)
 
@@ -159,7 +158,7 @@ func (c *Controller) EmailConfirm(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	
+
 	tokensSet, err := c.jwt.CreateTokens(userData.ID)
 
 	if err != nil {
@@ -167,11 +166,11 @@ func (c *Controller) EmailConfirm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseData := AuthJwtTokens{
-		AccessToken: tokensSet.Access,
+		AccessToken:  tokensSet.Access,
 		RefreshToken: tokensSet.Refresh,
 	}
 
-	c.repository.Delete(auth.ID)
+	c.repository.Delete(int(auth.ID))
 
 	response.JSON(w, &responseData, http.StatusOK)
 }
@@ -193,7 +192,7 @@ func (c *Controller) Refresh(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseData := AuthJwtTokens{
-		AccessToken: tokensSet.Access,
+		AccessToken:  tokensSet.Access,
 		RefreshToken: tokensSet.Refresh,
 	}
 

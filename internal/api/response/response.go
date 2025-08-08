@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-
 type ResponseError struct {
 	Message string
 }

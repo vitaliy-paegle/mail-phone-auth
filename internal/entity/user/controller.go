@@ -6,17 +6,16 @@ import (
 	"net/http"
 )
 
-
 type Controller struct {
-	Router     *http.ServeMux
+	Router   *http.ServeMux
 	Postgres *postgres.Postgres
-	Entity *entity.Entity[User, UserData]
+	Entity   *entity.Entity[User, UserData]
 }
 
 func NewController(router *http.ServeMux, postgres *postgres.Postgres) *Controller {
 
 	controller := Controller{
-		Router:     router,
+		Router:   router,
 		Postgres: postgres,
 	}
 

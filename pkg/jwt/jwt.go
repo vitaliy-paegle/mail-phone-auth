@@ -7,8 +7,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-
-
 type Config struct {
 	Secret        string `json:"secret" validate:"required"`
 	AccsessPeriod int    `json:"access_period" validate:"required"`
@@ -22,12 +20,11 @@ type Config struct {
 // 	"refresh_period": 120
 // }
 
-
 type TokenData struct {
 	jwt.RegisteredClaims
-	UserID uint `json:"user_id"`
+	UserID   uint   `json:"user_id"`
 	RoleName string `json:"role_name"`
-	Exp int64 `json:"exp"`
+	Exp      int64  `json:"exp"`
 }
 
 type TokensSet struct {
@@ -50,8 +47,8 @@ func (j *JWT) CreateTokens(userID uint) (*TokensSet, error) {
 
 	accessClaims := TokenData{
 		RegisteredClaims: jwt.RegisteredClaims{},
-		UserID: userID,
-		Exp: time.Now().Add(time.Duration(j.config.AccsessPeriod)*time.Second).Unix(),
+		UserID:           userID,
+		Exp:              time.Now().Add(time.Duration(j.config.AccsessPeriod) * time.Second).Unix(),
 	}
 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
@@ -64,8 +61,8 @@ func (j *JWT) CreateTokens(userID uint) (*TokensSet, error) {
 
 	refreshClaims := TokenData{
 		RegisteredClaims: jwt.RegisteredClaims{},
-		UserID: userID,
-		Exp: time.Now().Add(time.Duration(j.config.RefreshPeriod)*time.Second).Unix(),
+		UserID:           userID,
+		Exp:              time.Now().Add(time.Duration(j.config.RefreshPeriod) * time.Second).Unix(),
 	}
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
@@ -77,7 +74,7 @@ func (j *JWT) CreateTokens(userID uint) (*TokensSet, error) {
 	}
 
 	tokensSet := TokensSet{
-		Access: accessTokenString,
+		Access:  accessTokenString,
 		Refresh: refreshTokenString,
 	}
 
@@ -99,10 +96,8 @@ func (j *JWT) ParseToken(tokenString string) (*TokenData, error) {
 		return nil, errors.New("expire token")
 	}
 
-	return tokenData, nil	
+	return tokenData, nil
 }
-
-
 
 func (j *JWT) UpdateTokens(refreshToken string) (*TokensSet, error) {
 
@@ -115,10 +110,8 @@ func (j *JWT) UpdateTokens(refreshToken string) (*TokensSet, error) {
 	tokensSet, err := j.CreateTokens(tokenData.UserID)
 
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
 
 	return tokensSet, nil
 }
-
-

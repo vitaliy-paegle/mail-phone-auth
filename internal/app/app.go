@@ -33,16 +33,15 @@ func NewApp() *App {
 	const exolveFilePath = "./config/exolve.json"
 	const logFilePath = "./"
 
-
 	app := App{}
 
 	//  Set Logs file
-	app.setLogFile(logFilePath)
+	// app.setLogFile(logFilePath)
 
 	// Create Static File System
 
 	app.staticFileSystem = static.New()
-	
+
 	// Create JWT:
 	jwtConfig, err := files.InitConfig[jwt.Config](jwtCongigFilePath)
 	if err != nil {
@@ -111,7 +110,7 @@ func (app *App) setLogFile(filePath string) {
 
 	if err != nil {
 		err = nil
-		err = os.Mkdir( filePath + "logs", 0755)
+		err = os.Mkdir(filePath+"logs", 0755)
 		if err != nil {
 			log.Panic(err)
 		}
@@ -123,6 +122,6 @@ func (app *App) setLogFile(filePath string) {
 		log.Panic(err)
 	}
 
-	log.SetOutput(logFile)
+	log.SetOutput(logFile)	
 
 }

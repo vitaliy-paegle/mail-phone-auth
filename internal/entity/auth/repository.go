@@ -45,11 +45,11 @@ func (r *Repository) ReadLastAuthByEmail(email string) *Auth {
 
 }
 
-func (r *Repository) Delete(ID uint) error {
+func (r *Repository) Delete(ID int) error {
 
 	result := r.postgres.DB.Table("auths").
-	Where("id = ?", ID).
-	Update("deleted_at", time.Now())
+		Where("id = ?", ID).
+		Update("deleted_at", time.Now())
 
 	if result.Error != nil {
 		return result.Error

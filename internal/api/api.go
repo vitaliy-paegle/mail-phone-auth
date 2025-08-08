@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"mail-phone-auth/internal/entity/auth"
+	"mail-phone-auth/internal/entity/role"
 	"mail-phone-auth/internal/entity/user"
 	"mail-phone-auth/pkg/jino_mail"
 	"mail-phone-auth/pkg/jwt"
@@ -20,7 +21,8 @@ type API struct {
 	jinoMail       *jino_mail.JinoMail
 	authRepository *auth.Repository
 	authController *auth.Controller
-	userController    *user.Controller
+	userController *user.Controller
+	roleController *role.Controller
 }
 
 func New(postgres *postgres.Postgres, jwt *jwt.JWT, jinoMail *jino_mail.JinoMail) *API {
@@ -30,11 +32,11 @@ func New(postgres *postgres.Postgres, jwt *jwt.JWT, jinoMail *jino_mail.JinoMail
 	api.jwt = jwt
 	api.jinoMail = jinoMail
 
-	api.userController = user.NewController(api.Router, api.postgres)
-
 	api.authRepository = auth.NewRepository(api.postgres)
 	api.authController = auth.NewController(api.Router, api.authRepository, api.jinoMail, api.jwt)
 
+	api.userController = user.NewController(api.Router, api.postgres)
+	api.roleController = role.NewController(api.Router, api.postgres)
 
 	api.OpenAPIconnect()
 
@@ -45,8 +47,8 @@ func (api *API) OpenAPIconnect() {
 
 	config := swgui.Config{}
 
-	// Show SCHEMAS: {"defaultModelsExpandDepth": "1"} 
-	config.SettingsUI= map[string]string{"defaultModelsExpandDepth": "-1"} 
+	// Show SCHEMAS: {"defaultModelsExpandDepth": "1"}
+	config.SettingsUI = map[string]string{"defaultModelsExpandDepth": "-1"}
 	config.Title = "OpenAPI"
 	config.SwaggerJSON = "/static/openapi.json"
 	config.BasePath = "/"

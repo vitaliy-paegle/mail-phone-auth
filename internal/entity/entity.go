@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -92,7 +93,10 @@ func (e *Entity[M, B]) Read(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// result := e.postgres.DB.Preload("Role").First(model, id)
 	result := e.postgres.DB.First(model, id)
+	
+	e.ReadRelatedData(reflect.ValueOf(model))
 
 	if result.Error != nil {
 		log.Println(result.Error)
@@ -118,9 +122,18 @@ func (e *Entity[M, B]) ReadAll(w http.ResponseWriter, r *http.Request) {
 		offset = 0
 	}
 
+	model, err := CreateModelInstance[M]()
+
+	if err != nil {
+		log.Println(err)
+		response.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	entityList := EntityList[M]{}
 
-	result := e.postgres.DB.Table("users").
+	result := e.postgres.DB.
+		Model(model).
 		Where("deleted_at is NULL").
 		Order("id ASC").
 		Limit(limit).
@@ -133,6 +146,14 @@ func (e *Entity[M, B]) ReadAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var updatedList = make([]M, 0)
+
+	for  _, model:= range entityList.List {
+		e.ReadRelatedData(reflect.ValueOf(&model))
+		updatedList = append(updatedList, model)
+	}
+	
+	entityList.List = updatedList
 	entityList.Count = len(entityList.List)
 
 	response.JSON(w, &entityList, http.StatusOK)
@@ -176,7 +197,10 @@ func (e *Entity[M, B]) Update(w http.ResponseWriter, r *http.Request) {
 
 	e.UpdateData(model, &body)
 
-	result = e.postgres.DB.Updates(model)
+	// DB.Save - данные, которых нет в запросе удаляюся
+	// DB.Update - обновляются только данные, переданные в запросе
+
+	result = e.postgres.DB.Save(model)
 
 	if result.Error != nil {
 		log.Println(result.Error.Error())
@@ -286,5 +310,75 @@ func (e *Entity[M, B]) UpdateData(model *M, body *B) error {
 	}
 
 	return nil
+}
 
+func (e *Entity[M, B])  ReadRelatedData(values reflect.Value) {
+
+	if values.Kind() == reflect.Ptr {
+		values = values.Elem()
+	}
+
+	types := values.Type()
+
+	for index := range values.NumField() {
+		fieldValue := values.Field(index)
+		fieldType := types.Field(index)
+
+		gormValue := fieldType.Tag.Get("gorm")
+
+		if gormValue != "" {
+
+			for pair := range strings.SplitSeq(gormValue, ";") {
+
+				part :=strings.Split(pair, ":")
+
+				if part[0] == "foreignKey" &&  strings.Contains(strings.ToLower(part[1]), "id"){
+					foreignKeyName := part[1]
+					foreignKeyValue := values.FieldByName(foreignKeyName)
+		
+					if foreignKeyValue.Kind() == reflect.Ptr {
+						foreignKeyValue = foreignKeyValue.Elem()
+					}
+
+					if fieldType.Type.Kind() == reflect.Ptr {
+						fieldType.Type = fieldType.Type.Elem()
+					}
+
+					if foreignKeyValue.IsValid() && fieldValue.IsValid() && fieldValue.CanSet() {
+
+						if fieldType.Type.Kind() == reflect.Struct && foreignKeyValue.Kind() == reflect.Uint {
+							value := reflect.New(fieldType.Type)	
+							model := value.Interface()				
+
+							result := e.postgres.DB.First(model,foreignKeyValue.Uint())
+
+							if result.Error == nil {
+								
+								deletedAt := reflect.ValueOf(model).Elem().FieldByName("DeletedAt")
+
+								if deletedAt.IsNil() {
+									fieldValue.Set(reflect.ValueOf(model))
+								} else {
+									foreignKey := values.FieldByName(foreignKeyName)
+									if foreignKey.IsValid() && foreignKey.CanSet() {
+										foreignKey.SetZero()
+									}
+								}								
+								
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+		if fieldValue.Kind() == reflect.Ptr {
+			fieldValue = fieldValue.Elem()
+		}
+
+		if fieldValue.Kind() == reflect.Struct{
+			e.ReadRelatedData(fieldValue)				
+		}
+	}
 }

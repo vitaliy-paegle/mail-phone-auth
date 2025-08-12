@@ -5,3 +5,4 @@
 postgres.env
 /internal/api/openapi/examples
 /logs
+/files_store

@@ -94,7 +94,7 @@ func (e *Entity[M, B]) Read(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// result := e.postgres.DB.Preload("Role").First(model, id)
-	result := e.postgres.DB.First(model, id)
+	result := e.postgres.DB.Where("deleted_at is NULL").First(model, id)
 	
 	e.ReadRelatedData(reflect.ValueOf(model))
 

@@ -931,13 +931,13 @@
 			},
 			"FileData": {
 				"type":"object",
-				"required": ["name", "hash", ""],
+				"required": ["name", "hash", "link", "userId"],
 				"properties": {
 					"name": {
 						"type": "string",
 						"example": "file_name"
 					},
-					"extansion": {
+					"extension": {
 						"type": "string",
 						"example": "png"
 					},
@@ -952,7 +952,7 @@
 					"userId": {
 						"type": "integer",
 						"example": "1"
-					}											
+					}
 				}
 			},
 			"File": {
@@ -964,7 +964,12 @@
 					{
 						"$ref": "#/components/schemas/FileData"
 					}
-				]
+				],
+				"properties": {
+					"user": {
+						"$ref": "#/components/schemas/User"
+					}
+				}
 			}
 		},
 		"securitySchemes": {

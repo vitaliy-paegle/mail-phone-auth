@@ -4,6 +4,7 @@ import (
 	"log"
 	"mail-phone-auth/internal/app/files"
 	"mail-phone-auth/internal/entity/auth"
+	"mail-phone-auth/internal/entity/file"
 	"mail-phone-auth/internal/entity/role"
 	"mail-phone-auth/internal/entity/user"
 	"mail-phone-auth/pkg/postgres"
@@ -26,6 +27,7 @@ func main() {
 		user.User{},
 		auth.Auth{},
 		role.Role{},
+		file.File{},
 	)
 
 }

@@ -3,6 +3,7 @@ package http_server
 import (
 	"context"
 	"log"
+	"mail-phone-auth/internal/middleware"
 	"net/http"
 	"time"
 )
@@ -22,14 +23,14 @@ type HttpServer struct {
 	Router *http.ServeMux
 }
 
-func New(config *Config, router *http.ServeMux, staticFileSystem *http.FileSystem) *HttpServer {
+func New(config *Config, router *http.ServeMux, staticFileSystem *http.FileSystem, middleware *middleware.Middleware) *HttpServer {
 
 	const readTimeout = 5
 	const writeTimeout = 5
 
 	server := http.Server{
 		Addr:         ":" + config.Port,
-		Handler:      router,
+		Handler:      middleware.Log(middleware.Auth(router)),
 		ReadTimeout:  readTimeout * time.Second,
 		WriteTimeout: writeTimeout * time.Second,
 	}

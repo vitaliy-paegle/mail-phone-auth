@@ -156,8 +156,10 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 
 	result := c.Postgres.Table("files").Where("hash = ?", hash).Where("deleted_at is NULL").First(&copy)
 
+	c.Entity.ReadRelatedData(reflect.ValueOf(&copy))
+
 	if result.Error == nil {
-		response.JSON(w, &copy, http.StatusInternalServerError)
+		response.JSON(w, &copy, http.StatusOK)
 		return
 	}
 

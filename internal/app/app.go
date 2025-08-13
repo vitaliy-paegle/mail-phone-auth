@@ -5,6 +5,7 @@ import (
 	static "mail-phone-auth"
 	"mail-phone-auth/internal/api"
 	"mail-phone-auth/internal/app/files"
+	"mail-phone-auth/internal/middleware"
 	"mail-phone-auth/pkg/exolve"
 	"mail-phone-auth/pkg/http_server"
 	"mail-phone-auth/pkg/jino_mail"
@@ -22,6 +23,7 @@ type App struct {
 	jwt              *jwt.JWT
 	jinoMail         *jino_mail.JinoMail
 	exolve           *exolve.Exolve
+	middleware *middleware.Middleware
 }
 
 func NewApp() *App {
@@ -36,13 +38,12 @@ func NewApp() *App {
 	app := App{}
 
 	//  Set Logs file
-	// app.setLogFile(logFilePath)
+	app.setLogFile(logFilePath)
 
-	// Create Static File System
-
+	// Static File System:
 	app.staticFileSystem = static.New()
 
-	// Create JWT:
+	// JWT:
 	jwtConfig, err := files.InitConfig[jwt.Config](jwtCongigFilePath)
 	if err != nil {
 		log.Fatal("JWT CONFIG ERROR: ", err)
@@ -50,7 +51,7 @@ func NewApp() *App {
 
 	app.jwt = jwt.New(jwtConfig)
 
-	// Create JinoEmail:
+	//JinoEmail:
 	jinoMailConfig, err := files.InitConfig[jino_mail.Config](jinoMailFilePath)
 	if err != nil {
 		log.Fatal("JINO MAIL CONFIG ERROR: ", err)
@@ -58,7 +59,7 @@ func NewApp() *App {
 
 	app.jinoMail = jino_mail.New(jinoMailConfig, false)
 
-	// Create Poatgres:
+	//Postgres:
 	postgresConfig, err := files.InitConfig[postgres.Config](postgresCongigFilePath)
 	if err != nil {
 		log.Fatal("POSTGRES CONFIG ERROR: ", err)
@@ -69,18 +70,21 @@ func NewApp() *App {
 		log.Fatal("POSTGRES INIT ERROR: ", err)
 	}
 
-	// Create API:
+	//API:
 	app.api = api.New(app.postgres, app.jwt, app.jinoMail)
 
-	// Create HttpServer:
+	//Middleware:
+	app.middleware = middleware.New(app.jwt)
+
+	//HttpServer:
 	httpConfig, err := files.InitConfig[http_server.Config](httpServerConfigFilePath)
 	if err != nil {
 		log.Fatal("HTTP SERVER CONFIG ERROR: ", err)
 	}
 
-	app.httpServer = http_server.New(httpConfig, app.api.Router, app.staticFileSystem)
+	app.httpServer = http_server.New(httpConfig, app.api.Router, app.staticFileSystem, app.middleware)
 
-	// Create Exolve:
+	//Exolve:
 	exolveConfig, err := files.InitConfig[exolve.Config](exolveFilePath)
 	if err != nil {
 		log.Fatal("EXOLVE CONFIG ERROR: ", err)

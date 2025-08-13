@@ -23,6 +23,7 @@ func NewController(router *http.ServeMux, postgres *postgres.Postgres) *Controll
 
 	controller.Router.HandleFunc("GET /api/user/{id}", controller.Entity.Read)
 	controller.Router.HandleFunc("GET /api/user/all", controller.Entity.ReadAll)
+	// controller.Router.Handle("GET /api/user/all", middleware.Log(http.HandlerFunc(controller.Entity.ReadAll)))
 	controller.Router.HandleFunc("POST /api/user", controller.Entity.Create)
 	controller.Router.HandleFunc("PUT /api/user/{id}", controller.Entity.Update)
 	controller.Router.HandleFunc("DELETE /api/user/{id}", controller.Entity.Delete)

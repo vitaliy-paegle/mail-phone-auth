@@ -13,7 +13,7 @@ type Middleware struct {
 }
 
 func New(jwt *jwt.JWT) *Middleware {
-	return  &Middleware{
+	return &Middleware{
 		jwt: jwt,
 	}
 }
@@ -53,23 +53,23 @@ func (m *Middleware) Auth(next http.Handler) http.Handler {
 			if strings.HasPrefix(r.URL.Path, path) {
 				authHeader := r.Header.Get("Authorization")
 				if authHeader == "" {
-					log.Println("Unauthorized")					
+					log.Println("Unauthorized")
 					response.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
 				}
 				const prefix = "Bearer "
-				if !strings.HasPrefix(authHeader, prefix) {		
-					log.Println("Unauthorized")					
+				if !strings.HasPrefix(authHeader, prefix) {
+					log.Println("Unauthorized")
 					response.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
 				}
 				tokenString := authHeader[len(prefix):]
 				_, err := m.jwt.ParseToken(tokenString)
 				if err != nil {
-					log.Println("Unauthorized")		
+					log.Println("Unauthorized")
 					response.Error(w, "Unauthorized", http.StatusUnauthorized)
 					return
-				}				
+				}
 			}
 		}
 

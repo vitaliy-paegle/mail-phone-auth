@@ -95,7 +95,7 @@ func (e *Entity[M, B]) Read(w http.ResponseWriter, r *http.Request) {
 
 	// result := e.postgres.DB.Preload("Role").First(model, id)
 	result := e.postgres.DB.Where("deleted_at is NULL").First(model, id)
-	
+
 	e.ReadRelatedData(reflect.ValueOf(model))
 
 	if result.Error != nil {
@@ -148,11 +148,11 @@ func (e *Entity[M, B]) ReadAll(w http.ResponseWriter, r *http.Request) {
 
 	var updatedList = make([]M, 0)
 
-	for  _, model:= range entityList.List {
+	for _, model := range entityList.List {
 		e.ReadRelatedData(reflect.ValueOf(&model))
 		updatedList = append(updatedList, model)
 	}
-	
+
 	entityList.List = updatedList
 	entityList.Count = len(entityList.List)
 
@@ -312,7 +312,7 @@ func (e *Entity[M, B]) UpdateData(model *M, body *B) error {
 	return nil
 }
 
-func (e *Entity[M, B])  ReadRelatedData(values reflect.Value) {
+func (e *Entity[M, B]) ReadRelatedData(values reflect.Value) {
 
 	if values.Kind() == reflect.Ptr {
 		values = values.Elem()
@@ -330,12 +330,12 @@ func (e *Entity[M, B])  ReadRelatedData(values reflect.Value) {
 
 			for pair := range strings.SplitSeq(gormValue, ";") {
 
-				part :=strings.Split(pair, ":")
+				part := strings.Split(pair, ":")
 
-				if part[0] == "foreignKey" &&  strings.Contains(strings.ToLower(part[1]), "id"){
+				if part[0] == "foreignKey" && strings.Contains(strings.ToLower(part[1]), "id") {
 					foreignKeyName := part[1]
 					foreignKeyValue := values.FieldByName(foreignKeyName)
-		
+
 					if foreignKeyValue.Kind() == reflect.Ptr {
 						foreignKeyValue = foreignKeyValue.Elem()
 					}
@@ -347,13 +347,13 @@ func (e *Entity[M, B])  ReadRelatedData(values reflect.Value) {
 					if foreignKeyValue.IsValid() && fieldValue.IsValid() && fieldValue.CanSet() {
 
 						if fieldType.Type.Kind() == reflect.Struct && foreignKeyValue.Kind() == reflect.Uint {
-							value := reflect.New(fieldType.Type)	
-							model := value.Interface()				
+							value := reflect.New(fieldType.Type)
+							model := value.Interface()
 
-							result := e.postgres.DB.First(model,foreignKeyValue.Uint())
+							result := e.postgres.DB.First(model, foreignKeyValue.Uint())
 
 							if result.Error == nil {
-								
+
 								deletedAt := reflect.ValueOf(model).Elem().FieldByName("DeletedAt")
 
 								if deletedAt.IsNil() {
@@ -363,8 +363,8 @@ func (e *Entity[M, B])  ReadRelatedData(values reflect.Value) {
 									if foreignKey.IsValid() && foreignKey.CanSet() {
 										foreignKey.SetZero()
 									}
-								}								
-								
+								}
+
 							}
 						}
 					}
@@ -372,13 +372,12 @@ func (e *Entity[M, B])  ReadRelatedData(values reflect.Value) {
 			}
 		}
 
-
 		if fieldValue.Kind() == reflect.Ptr {
 			fieldValue = fieldValue.Elem()
 		}
 
-		if fieldValue.Kind() == reflect.Struct{
-			e.ReadRelatedData(fieldValue)				
+		if fieldValue.Kind() == reflect.Struct {
+			e.ReadRelatedData(fieldValue)
 		}
 	}
 }

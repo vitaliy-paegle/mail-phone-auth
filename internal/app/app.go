@@ -23,7 +23,7 @@ type App struct {
 	jwt              *jwt.JWT
 	jinoMail         *jino_mail.JinoMail
 	exolve           *exolve.Exolve
-	middleware *middleware.Middleware
+	middleware       *middleware.Middleware
 }
 
 func NewApp() *App {
@@ -126,6 +126,6 @@ func (app *App) setLogFile(filePath string) {
 		log.Panic(err)
 	}
 
-	log.SetOutput(logFile)	
+	log.SetOutput(logFile)
 
 }

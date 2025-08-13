@@ -20,11 +20,11 @@ import (
 )
 
 type Controller struct {
-	Router   *http.ServeMux
-	Postgres *postgres.Postgres
-	Entity   *entity.Entity[File, FileData]
+	Router    *http.ServeMux
+	Postgres  *postgres.Postgres
+	Entity    *entity.Entity[File, FileData]
 	StorePath string
-	JWT *jwt.JWT
+	JWT       *jwt.JWT
 }
 
 func NewController(router *http.ServeMux, postgres *postgres.Postgres, jwt *jwt.JWT) *Controller {
@@ -32,7 +32,7 @@ func NewController(router *http.ServeMux, postgres *postgres.Postgres, jwt *jwt.
 	controller := Controller{
 		Router:   router,
 		Postgres: postgres,
-		JWT: jwt,
+		JWT:      jwt,
 	}
 
 	controller.Entity = entity.New[File, FileData](controller.Postgres)
@@ -70,8 +70,8 @@ func FileHash(file multipart.File) (string, error) {
 	}
 
 	hashInBytes := hash.Sum(nil)
-	
-	return hex.EncodeToString(hashInBytes), nil	
+
+	return hex.EncodeToString(hashInBytes), nil
 }
 
 func (c *Controller) GetUserID(r *http.Request) (*uint, error) {
@@ -84,7 +84,7 @@ func (c *Controller) GetUserID(r *http.Request) (*uint, error) {
 
 	const prefix = "Bearer "
 	if !strings.HasPrefix(authHeader, prefix) {
-		
+
 		return nil, errors.New("authorization header must be a Bearer token")
 	}
 
@@ -127,7 +127,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer file.Close()	
+	defer file.Close()
 
 	hash, err := FileHash(file)
 
@@ -143,13 +143,12 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 		log.Println("Failed to seek file:", err)
 		response.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}	
+	}
 
 	log.Println(header.Filename, hash)
 
-	
 	fileExt := strings.Split(filepath.Ext(header.Filename), ".")[1]
-	
+
 	fileName := hash + "." + fileExt
 
 	var copy File
@@ -173,7 +172,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 
 	defer f.Close()
 
-	written, err := io.Copy(f, file)	
+	written, err := io.Copy(f, file)
 
 	log.Println("Written: ", written)
 
@@ -197,7 +196,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 
 	// log.Println(string(json))
 
-	result = c.Postgres.DB.Create(&fileData)	
+	result = c.Postgres.DB.Create(&fileData)
 
 	if result.Error != nil {
 		log.Println(result.Error.Error())
@@ -208,7 +207,7 @@ func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 	c.Entity.ReadRelatedData(reflect.ValueOf(&fileData))
 
 	response.JSON(w, &fileData, http.StatusOK)
-	
+
 }
 
 func (c *Controller) Download(w http.ResponseWriter, r *http.Request) {
